@@ -1,5 +1,5 @@
 {
-    "name": "altshift-website",
+    "name": "altshift-www",
     "type": "module",
     "version": "0.16",
     "description": "The Alt-Shift website.",
@@ -7,13 +7,13 @@
         "build": "webpack --config webpack.config.mjs --stats-children"
     },
     "dependencies": {
-        "@altshiftab/web_components": "^0.0.72",
-        "@altshiftab/styles": "^0.0.13",
-        "@altshiftab/http_service_utils_js": "^0.0.9",
-        "lit": "^3.3.2"
+        "@altshiftab/http_service_utils_js": "^0.0.12",
+        "@altshiftab/styles": "^0.0.15",
+        "@altshiftab/web_components": "^0.0.82",
+        "lit": "^3.3.3"
     },
     "devDependencies": {
-        "@altshiftab/webpack_configuration": "^0.0.37",
-        "webpack-cli": "^7.0.2"
+        "@altshiftab/webpack_configuration": "^0.0.40",
+        "webpack-cli": "^7.2.2"
     }
 }
