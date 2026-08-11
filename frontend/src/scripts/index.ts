@@ -92,6 +92,7 @@ class AltShiftFooterWww extends LitElement {
                         </svg>
                     </a>
                 </altshift-box>
+                <a slot="legal" href="${config.routes["privacy-policy"]}">Privacy policy</a>
             </altshift-footer>
         `;
     }

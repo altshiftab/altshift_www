@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"maps"
 	"net/http"
+	"net/url"
 
 	motmedelEnv "github.com/Motmedel/utils_go/pkg/env"
 	motmedelErrors "github.com/Motmedel/utils_go/pkg/errors"
@@ -62,6 +63,21 @@ func main() {
 		specification.Path = route
 
 		mux.Add(&specification)
+	}
+
+	// service.New generates the sitemap before the document routes above are
+	// registered, so it would only list "/". Regenerate it now that every route
+	// is present; mux.Add upserts, so the sitemap and robots.txt are replaced.
+	scheme := "https"
+	if domain == "localhost" {
+		scheme = "http"
+	}
+	baseUrl := &url.URL{Scheme: scheme, Host: domain}
+	if err := altshiftGcpUtilsHttp.PatchCrawlable(mux, baseUrl, mux.GetDocumentEndpointSpecifications()); err != nil {
+		logger.FatalWithExitingMessage(
+			"An error occurred when patching crawlable.",
+			motmedelErrors.NewWithTrace(fmt.Errorf("patch crawlable: %w", err), mux, baseUrl),
+		)
 	}
 
 	httpServer := httpService.Server

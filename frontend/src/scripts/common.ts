@@ -7,6 +7,12 @@ export const textStyles = css`
         font-size: 15.625em;
         text-transform: lowercase;
 
+        /* Crop the leading the font reserves above/below the glyphs so the
+           heading's box hugs the letters. Progressive enhancement: unsupported
+           browsers (currently Firefox) simply keep the default leading. */
+        text-box-trim: trim-both;
+        text-box-edge: cap alphabetic;
+
         @media screen and (max-width: 1280px) {
             font-size: 5.2083em;
         }
