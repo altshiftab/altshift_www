@@ -8,7 +8,7 @@ backend-build:
 
 frontend-build:
 	@echo "[frontend] Building..."
-	cd frontend && npm run build
+	cd frontend && GOEXPERIMENT=jsonv2 go run github.com/altshiftab/web_build/cmd/web_build@v0.0.3 -preload-fonts '^fonts/mulish-.*\.woff2$$'
 
 build: frontend-build backend-build
 
