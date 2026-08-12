@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+        "strict": true,
         "rootDir": "./src/scripts",
         "moduleResolution": "bundler",
         "resolveJsonModule": true,
