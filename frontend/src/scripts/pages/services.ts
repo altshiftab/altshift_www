@@ -3,7 +3,7 @@ import {customElement, property, query, state} from "lit/decorators.js";
 
 import "@altshiftab/web_components/box";
 
-import {textStyles} from "../common";
+import {textStyles} from "../lib/common";
 
 export const rowSelectedEventType = "row-selected";
 

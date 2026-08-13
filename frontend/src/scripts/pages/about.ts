@@ -4,7 +4,7 @@ import {customElement} from "lit/decorators.js"
 import "@altshiftab/web_components/box";
 import "@altshiftab/web_components/button";
 
-import {textStyles} from "../common";
+import {textStyles} from "../lib/common";
 import meImage from "../../images/me.avif"
 import config from "../../../../config.json";
 

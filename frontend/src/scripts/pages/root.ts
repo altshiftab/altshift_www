@@ -4,7 +4,7 @@ import {customElement} from "lit/decorators.js"
 import "@altshiftab/web_components/box";
 import "@altshiftab/web_components/button";
 
-import {textStyles} from "../common";
+import {textStyles} from "../lib/common";
 import config from "../../../../config.json";
 
 @customElement("services-table")

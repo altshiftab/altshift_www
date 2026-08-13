@@ -1,6 +1,6 @@
 import {css, CSSResultGroup, html, LitElement} from "lit";
 import {customElement} from "lit/decorators.js"
-import {textStyles} from "../common";
+import {textStyles} from "../lib/common";
 
 @customElement("content-contact")
 export default class ContentContact extends LitElement {
