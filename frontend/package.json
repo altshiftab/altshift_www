@@ -6,7 +6,7 @@
     "dependencies": {
         "@altshiftab/http_service_utils_js": "^0.0.12",
         "@altshiftab/styles": "^0.0.16",
-        "@altshiftab/web_components": "^0.0.82",
+        "@altshiftab/web_components": "^0.0.83",
         "lit": "^3.3.3"
     }
 }
