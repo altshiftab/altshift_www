@@ -4,91 +4,60 @@ import (
 	"fmt"
 	"log/slog"
 	"maps"
-	"net/http"
-	"net/url"
+	"slices"
 
 	motmedelEnv "github.com/Motmedel/utils_go/pkg/env"
 	motmedelErrors "github.com/Motmedel/utils_go/pkg/errors"
-	altshiftGcpUtilsHttp "github.com/altshiftab/gcp_utils/pkg/http"
-	"github.com/altshiftab/gcp_utils/pkg/http/types/service"
-	"github.com/altshiftab/gcp_utils/pkg/http/types/service/service_config"
-	gcpUtilsLogger "github.com/altshiftab/gcp_utils/pkg/types/logger"
+	motmedelService "github.com/Motmedel/utils_go/pkg/http/service"
+	"github.com/Motmedel/utils_go/pkg/http/service/service_config"
+	motmedelHttpTypes "github.com/Motmedel/utils_go/pkg/http/types"
+	motmedelHttpLogger "github.com/Motmedel/utils_go/pkg/log/http_logger"
+	"github.com/Motmedel/utils_go/pkg/log/http_logger/http_logger_config"
 )
 
 func main() {
-	logger := gcpUtilsLogger.New()
+	logger := motmedelHttpLogger.New(http_logger_config.WithGcp(true))
 	slog.SetDefault(logger.Logger)
 
 	domain := motmedelEnv.GetEnvWithDefault("DOMAIN", "localhost")
 	port := motmedelEnv.GetEnvWithDefault("PORT", "8080")
 
-	httpService, err := service.New(
-		domain,
-		port,
-		service_config.WithStaticContentEndpoints(staticContentEndpoints),
-		service_config.WithPublic(true),
+	httpService, err := motmedelService.New(
+		service_config.WithHost(domain),
+		service_config.WithAddress(fmt.Sprintf(":%s", port)),
+		service_config.WithProfile(service_config.ProfilePublicWeb),
+		service_config.WithEndpoints(staticContentEndpoints...),
+		// The document served at "/" is served at each of the routes the frontend routes on its
+		// own, so that a request for one arrives at the document that routes it. They are taken in
+		// order, so that the sitemap made of them is the same from one start to the next.
+		service_config.WithDuplicatedEndpoint("/", slices.Sorted(maps.Values(routes))...),
+		service_config.WithTrustedTypes(litHtmlTrustedTypesPolicy),
+		// The load balancer speaks prior-knowledge unencrypted HTTP/2 to the backend, which the
+		// standard library serves alongside HTTP/1.
+		service_config.WithUnencryptedHttp2(true),
+		// The languages a vulnerability is preferably reported in; the rest of what the security.txt
+		// says, and which of its forms is served, follows from the domain.
+		service_config.WithSecurityTxtContent(
+			&motmedelHttpTypes.SecurityTxt{PreferredLanguages: []string{"sv", "en"}},
+		),
 	)
 	if err != nil {
-		logger.FatalWithExitingMessage("An error occurred when creating the http service.", err)
+		logger.FatalWithExitingMessage(
+			"An error occurred when creating the http service.",
+			motmedelErrors.New(fmt.Errorf("service new: %w", err), domain, port),
+		)
 	}
 	if httpService == nil {
 		logger.FatalWithExitingMessage("Nil http service.", nil)
 	}
 
-	mux := httpService.Mux
-	if mux == nil {
-		logger.FatalWithExitingMessage("Nil mux", nil)
-	}
-
-	if err := altshiftGcpUtilsHttp.PatchTrustedTypes(mux, litHtmlTrustedTypesPolicy, webpackTrustedTypesPolicy); err != nil {
+	// Serving stops when the process is asked to, letting the requests being handled finish: an
+	// instance is replaced whenever a revision is, and a request killed midway leaves whatever it
+	// was doing half done.
+	if err := httpService.Serve(); err != nil {
 		logger.FatalWithExitingMessage(
-			"An error occurred when patching trusted types.",
-			motmedelErrors.NewWithTrace(
-				fmt.Errorf("patch trusted types: %w", err),
-				mux, litHtmlTrustedTypesPolicy, webpackTrustedTypesPolicy,
-			),
-		)
-	}
-
-	indexEndpointSpecification := mux.Get("/", http.MethodGet)
-	if indexEndpointSpecification == nil {
-		logger.FatalWithExitingMessage(
-			"The index endpoint specification is nil.",
-			nil,
-		)
-	}
-
-	for route := range maps.Values(routes) {
-		specification := *indexEndpointSpecification
-		specification.Path = route
-
-		mux.Add(&specification)
-	}
-
-	// service.New generates the sitemap before the document routes above are
-	// registered, so it would only list "/". Regenerate it now that every route
-	// is present; mux.Add upserts, so the sitemap and robots.txt are replaced.
-	scheme := "https"
-	if domain == "localhost" {
-		scheme = "http"
-	}
-	baseUrl := &url.URL{Scheme: scheme, Host: domain}
-	if err := altshiftGcpUtilsHttp.PatchCrawlable(mux, baseUrl, mux.GetDocumentEndpointSpecifications()); err != nil {
-		logger.FatalWithExitingMessage(
-			"An error occurred when patching crawlable.",
-			motmedelErrors.NewWithTrace(fmt.Errorf("patch crawlable: %w", err), mux, baseUrl),
-		)
-	}
-
-	httpServer := httpService.Server
-	if httpServer == nil {
-		logger.FatalWithExitingMessage("Nil http server.", nil)
-	}
-
-	if err := httpServer.ListenAndServe(); err != nil {
-		logger.FatalWithExitingMessage(
-			"An error occurred when listening and serving.",
-			motmedelErrors.NewWithTrace(fmt.Errorf("http server listen and serve: %w", err), httpServer),
+			"An error occurred when serving.",
+			motmedelErrors.New(fmt.Errorf("service serve: %w", err)),
 		)
 	}
 }
