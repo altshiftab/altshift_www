@@ -10,7 +10,6 @@ import (
 	altshiftErrors "github.com/altshiftab/utils_go/pkg/errors"
 	altshiftService "github.com/altshiftab/utils_go/pkg/http/service"
 	"github.com/altshiftab/utils_go/pkg/http/service/service_config"
-	altshiftHttpTypes "github.com/altshiftab/utils_go/pkg/http/types"
 	altshiftHttpLogger "github.com/altshiftab/utils_go/pkg/log/http_logger"
 	"github.com/altshiftab/utils_go/pkg/log/http_logger/http_logger_config"
 )
@@ -35,11 +34,6 @@ func main() {
 		// The load balancer speaks prior-knowledge unencrypted HTTP/2 to the backend, which the
 		// standard library serves alongside HTTP/1.
 		service_config.WithUnencryptedHttp2(true),
-		// The languages a vulnerability is preferably reported in; the rest of what the security.txt
-		// says, and which of its forms is served, follows from the domain.
-		service_config.WithSecurityTxtContent(
-			&altshiftHttpTypes.SecurityTxt{PreferredLanguages: []string{"sv", "en"}},
-		),
 	)
 	if err != nil {
 		logger.FatalWithExitingMessage(
