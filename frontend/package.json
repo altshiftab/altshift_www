@@ -4,8 +4,8 @@
     "version": "0.16",
     "description": "The Alt-Shift website.",
     "dependencies": {
-        "@altshiftab/http_service_utils_js": "^0.0.12",
         "@altshiftab/styles": "^0.0.16",
+        "@altshiftab/utils": "^0.0.9",
         "@altshiftab/web_components": "^0.0.84",
         "lit": "^3.3.3"
     }

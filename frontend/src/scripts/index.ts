@@ -1,4 +1,4 @@
-import {addErrorEventListeners} from "@altshiftab/http_service_utils_js";
+import {addErrorEventListeners} from "@altshiftab/utils/browser/error_reporting";
 import {css, html, LitElement, render} from "lit";
 import {customElement} from "lit/decorators.js"
 

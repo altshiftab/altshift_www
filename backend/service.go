@@ -6,23 +6,23 @@ import (
 	"maps"
 	"slices"
 
-	motmedelEnv "github.com/Motmedel/utils_go/pkg/env"
-	motmedelErrors "github.com/Motmedel/utils_go/pkg/errors"
-	motmedelService "github.com/Motmedel/utils_go/pkg/http/service"
-	"github.com/Motmedel/utils_go/pkg/http/service/service_config"
-	motmedelHttpTypes "github.com/Motmedel/utils_go/pkg/http/types"
-	motmedelHttpLogger "github.com/Motmedel/utils_go/pkg/log/http_logger"
-	"github.com/Motmedel/utils_go/pkg/log/http_logger/http_logger_config"
+	altshiftEnv "github.com/altshiftab/utils_go/pkg/env"
+	altshiftErrors "github.com/altshiftab/utils_go/pkg/errors"
+	altshiftService "github.com/altshiftab/utils_go/pkg/http/service"
+	"github.com/altshiftab/utils_go/pkg/http/service/service_config"
+	altshiftHttpTypes "github.com/altshiftab/utils_go/pkg/http/types"
+	altshiftHttpLogger "github.com/altshiftab/utils_go/pkg/log/http_logger"
+	"github.com/altshiftab/utils_go/pkg/log/http_logger/http_logger_config"
 )
 
 func main() {
-	logger := motmedelHttpLogger.New(http_logger_config.WithGcp(true))
+	logger := altshiftHttpLogger.New(http_logger_config.WithGcp(true))
 	slog.SetDefault(logger.Logger)
 
-	domain := motmedelEnv.GetEnvWithDefault("DOMAIN", "localhost")
-	port := motmedelEnv.GetEnvWithDefault("PORT", "8080")
+	domain := altshiftEnv.GetEnvWithDefault("DOMAIN", "localhost")
+	port := altshiftEnv.GetEnvWithDefault("PORT", "8080")
 
-	httpService, err := motmedelService.New(
+	httpService, err := altshiftService.New(
 		service_config.WithHost(domain),
 		service_config.WithAddress(fmt.Sprintf(":%s", port)),
 		service_config.WithProfile(service_config.ProfilePublicWeb),
@@ -38,13 +38,13 @@ func main() {
 		// The languages a vulnerability is preferably reported in; the rest of what the security.txt
 		// says, and which of its forms is served, follows from the domain.
 		service_config.WithSecurityTxtContent(
-			&motmedelHttpTypes.SecurityTxt{PreferredLanguages: []string{"sv", "en"}},
+			&altshiftHttpTypes.SecurityTxt{PreferredLanguages: []string{"sv", "en"}},
 		),
 	)
 	if err != nil {
 		logger.FatalWithExitingMessage(
 			"An error occurred when creating the http service.",
-			motmedelErrors.New(fmt.Errorf("service new: %w", err), domain, port),
+			altshiftErrors.New(fmt.Errorf("service new: %w", err), domain, port),
 		)
 	}
 	if httpService == nil {
@@ -57,7 +57,7 @@ func main() {
 	if err := httpService.Serve(); err != nil {
 		logger.FatalWithExitingMessage(
 			"An error occurred when serving.",
-			motmedelErrors.New(fmt.Errorf("service serve: %w", err)),
+			altshiftErrors.New(fmt.Errorf("service serve: %w", err)),
 		)
 	}
 }
