@@ -349,13 +349,23 @@ export default class ContentRoot extends LitElement {
                                     width: unset;
                                 }
 
+                                /* The landing title opens the page, where the other pages open with
+                                   an h1. Drop the user agent's heading margin and crop the leading
+                                   the font reserves above the caps so this title starts at the top
+                                   of the main element too, rather than a heading's height below it. */
+                                > h2 {
+                                    margin-top: 0;
+
+                                    text-box-trim: trim-start;
+                                    text-box-edge: cap alphabetic;
+                                }
+
                                 > .info-button-container {
                                     padding-top: 2rem;
                                     display: flex;
                                     gap: 4rem;
 
                                     @media screen and (max-width: 1280px) {
-                                        padding-top: 4rem;
                                         gap: unset;
                                         justify-content: space-around;
                                     }

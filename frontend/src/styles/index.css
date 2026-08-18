@@ -30,7 +30,10 @@ html {
     }
 
     > body {
-        gap: 5rem;
+        /* Separates the header from the main element, and the main element from the footer.
+           The footer adds a margin of its own on top of this, so the value is chosen for the
+           header side. */
+        gap: 3rem;
 
         &.loading {
             display: none;
