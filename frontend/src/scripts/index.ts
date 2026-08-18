@@ -6,25 +6,14 @@ import "@altshiftab/styles/common_web.css";
 import "@altshiftab/web_components/header";
 import "@altshiftab/web_components/footer";
 import "@altshiftab/web_components/box";
-import {
-    darkClassName,
-    darkThemeValue,
-    lightClassName,
-    localStorageThemeKey,
-    prefersDarkTheme
-} from "@altshiftab/web_components/theme_toggler"
-import {ToggledEvent, toggledSwitchEventType} from "@altshiftab/web_components/switch";
+import {applyTheme} from "@altshiftab/web_components/theme_toggler"
 
 import "../styles/index.css";
 import config from "../../../config.json";
 
 addErrorEventListeners();
 
-const useDarkTheme = prefersDarkTheme();
-const [classToAdd, classToRemove] = useDarkTheme ? ["dark", "light"] : ["light", "dark"];
-
-document.documentElement.classList.add(classToAdd);
-document.documentElement.classList.remove(classToRemove);
+applyTheme();
 
 const routeNames = Object.keys(config.routes);
 const routePaths = ["/", ...Object.values(config.routes)];
@@ -104,6 +93,10 @@ class AltShiftHeaderWww extends LitElement {
         :host {
             > altshift-header {
                 &[compact] > altshift-box {
+                    /* One height for every row of the menu, so that the row holding a mark comes
+                       out level with those holding type instead of being sized by its contents. */
+                    --menu-row-height: 5.5rem;
+
                     background-color: var(--altshift-main-color);
                     box-sizing: border-box;
 
@@ -116,8 +109,11 @@ class AltShiftHeaderWww extends LitElement {
                     }
 
                     > a {
-                        padding: 2rem;
-                        height: auto;
+                        display: flex;
+                        align-items: center;
+
+                        padding: 0 2rem;
+                        height: var(--menu-row-height);
                         background-color: var(--altshift-main-color);
                         justify-content: unset;
                     }
@@ -137,6 +133,31 @@ class AltShiftHeaderWww extends LitElement {
                         padding: 0 2rem;
                     }
                 }
+
+                /* The header slots the same children into the nav bar and into the menu, so this
+                   one is left to the menu; the wide layout keeps the toggler under the header. */
+                > .theme-toggler-box {
+                    display: none;
+
+                    @media screen and (max-width: 1280px) {
+                        display: flex;
+
+                        --altshift-theme-toggler-icon-size: 1.5rem;
+                        --altshift-theme-toggler-padding: 0 2rem;
+
+                        &::part(box-container) {
+                            display: flex;
+                            background-color: var(--altshift-main-color);
+                        }
+
+                        /* Taking the whole row, so that pressing anywhere in it toggles, the way
+                           pressing anywhere in a row of text follows its link. */
+                        > theme-toggler {
+                            flex: 1 0 auto;
+                            height: var(--menu-row-height);
+                        }
+                    }
+                }
             }
         }
     `;
@@ -147,6 +168,7 @@ class AltShiftHeaderWww extends LitElement {
                 <altshift-box unbordered contracted textBox selectable><a href="${config.routes.services}">Services</a></altshift-box>
                 <altshift-box unbordered contracted textBox selectable><a href="${config.routes.about}">About</a></altshift-box>
                 <altshift-box unbordered contracted textBox selectable><a href="${config.routes.contact}">Contact</a></altshift-box>
+                <altshift-box unbordered contracted class="theme-toggler-box"><theme-toggler></theme-toggler></altshift-box>
             </altshift-header>
         `;
     }
@@ -266,30 +288,4 @@ addEventListener("click", (event: MouseEvent) => {
 });
 
 addEventListener("popstate", () => renderSpa())
-addEventListener("DOMContentLoaded", () => {
-    const themeTogglerContainer = document.querySelector(".theme-toggler-container");
-    if (!(themeTogglerContainer instanceof HTMLElement))
-        throw new Error("theme toggler container not found");
-
-    render(
-        html`<theme-toggler ?useDarkTheme="${useDarkTheme}"></theme-toggler>`,
-        themeTogglerContainer
-    )
-
-    renderSpa();
-});
-
-addEventListener(toggledSwitchEventType, event => {
-    const themeValue = (event as ToggledEvent).detail.value ?? "";
-    localStorage.setItem(localStorageThemeKey, themeValue);
-
-    const [classToAdd, classToRemove] = themeValue === darkThemeValue
-        ? [darkClassName, lightClassName]
-        : [lightClassName, darkClassName]
-    ;
-
-    for (const element of [document.documentElement]) {
-        element.classList.add(classToAdd);
-        element.classList.remove(classToRemove);
-    }
-});
+addEventListener("DOMContentLoaded", () => renderSpa());

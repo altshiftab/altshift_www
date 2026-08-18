@@ -44,12 +44,18 @@ html {
             margin-left: auto;
             margin-right: auto;
 
+            /* The narrow layout carries the toggler as the last item of the header's menu
+               instead, so as not to spend a row of its own on it. */
             > .theme-toggler-container {
                 position: relative;
                 width: 100%;
                 display: flex;
                 justify-content: flex-end;
                 padding-top: 1rem;
+
+                @media screen and (max-width: 1280px) {
+                    display: none;
+                }
             }
         }
 
