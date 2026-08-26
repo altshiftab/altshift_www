@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 COPY . .
 RUN go mod download && go mod verify
 
-RUN CGO_ENABLED=0 GOOS=linux GOEXPERIMENT=jsonv2 go build -a -ldflags="-s -w" -installsuffix cgo -o /usr/src/bin/app
+RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags="-s -w" -installsuffix cgo -o /usr/src/bin/app
 
 FROM scratch
 
