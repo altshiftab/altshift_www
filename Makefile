@@ -23,7 +23,7 @@ frontend-check:
 
 frontend-build: frontend-check
 	@echo "[frontend] Building..."
-	cd frontend && go tool web_build -preload-fonts '^fonts/mulish-.*\.woff2$$'
+	cd frontend && go tool web_build --preload-fonts '^fonts/mulish-.*\.woff2$$'
 
 build: frontend-build backend-build
 
