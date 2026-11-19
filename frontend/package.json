@@ -5,7 +5,7 @@
     "description": "The Alt-Shift website.",
     "dependencies": {
         "@altshiftab/styles": "^0.0.16",
-        "@altshiftab/utils": "^0.0.9",
+        "@altshiftab/utils": "^0.0.29",
         "@altshiftab/web_components": "^0.0.90",
         "lit": "^3.3.3"
     }
