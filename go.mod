@@ -9,7 +9,7 @@ tool (
 
 require (
 	github.com/Microsoft/go-winio v0.6.4 // indirect
-	github.com/altshiftab/utils_go v1.125.1 // indirect
+	github.com/altshiftab/utils_go v1.125.2 // indirect
 	github.com/altshiftab/web_build v0.0.10 // indirect
 	github.com/evanw/esbuild v0.28.2 // indirect
 	github.com/go-json-experiment/json v1.27.2 // indirect
