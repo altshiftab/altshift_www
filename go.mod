@@ -1,4 +1,4 @@
-module github.com/altshiftab/altshift_www
+module github.com/altshiftab/altshift_www/tools
 
 go 1.27
 
