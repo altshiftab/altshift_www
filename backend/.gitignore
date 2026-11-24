@@ -8,4 +8,5 @@
 
 !/config.go
 !/service.go
+!/service_test.go
 !/static_content_endpoints.go

@@ -14,6 +14,16 @@ import (
 	"github.com/altshiftab/utils_go/pkg/log/http_logger/http_logger_config"
 )
 
+// forwardedForOption reads the client second from the right of X-Forwarded-For: Firebase Hosting
+// replaces the header with the client and Google's front end appends Firebase's edge. A direct
+// run.app call can name any client, which is accepted.
+func forwardedForOption() service_config.Option {
+	return func(config *service_config.Config) {
+		service_config.WithTrustForwardedFor(true)(config)
+		service_config.WithForwardedForHops(2)(config)
+	}
+}
+
 func main() {
 	logger := altshiftHttpLogger.New(http_logger_config.WithGcp(true))
 	slog.SetDefault(logger.Logger)
@@ -29,6 +39,7 @@ func main() {
 	httpService, err := altshiftService.New(
 		service_config.WithHost(domain),
 		service_config.WithTrustForwardedHost(trustForwardedHost),
+		forwardedForOption(),
 		service_config.WithAddress(fmt.Sprintf(":%s", port)),
 		service_config.WithProfile(service_config.ProfilePublicWeb),
 		service_config.WithEndpoints(staticContentEndpoints...),
